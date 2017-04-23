@@ -24,12 +24,10 @@ class Record(object):
         self.type = dct["type"]
         self.unique_id = dct["unique-id"]
         self.volume = dct["volume"]
-        self.web_of_science_categories = self._split_categories(dct["web-of-science-categories"])
+        self.categories = self._split_categories(dct["web-of-science-categories"])
         self.year = dct["year"]
 
         self.is_relevant = False
-
-    @property
 
     @staticmethod
     def _clear_newlines(abstract_str):
@@ -57,15 +55,14 @@ def old_main():
     # for record in bib_database.entries[0:1]:
 
 
-def main():
+def get_records():
     bib_path = sys.argv[1]
     with open(bib_path, 'r') as bibfile:
         bibtex_str = bibfile.read()
 
     bib_database = bibtexparser.loads(bibtex_str)
 
-    records = [Record(entry) for entry in bib_database.entries]
-    [print(record.title) for record in records]
+    return [Record(entry) for entry in bib_database.entries]
 
 if __name__ == '__main__':
-    main()
+    get_records()
