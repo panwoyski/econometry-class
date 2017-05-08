@@ -16,11 +16,11 @@ for file in files:
     formatted_timeseries = []
     for timestamp, value in timeseries:
         dt_time = datetime.utcfromtimestamp(timestamp/1000)
-        formatted_timeseries.append((dt_time.year, dt_time.month, value))
+        formatted_timeseries.append((dt_time.strftime('%Y/%m'), value))
 
     with open('csv_commits/' + file.split('.')[0] + '.csv', 'w+') as fd:
         writer = csv.writer(fd)
-        writer.writerow(['year', 'month', 'commits'])
+        writer.writerow(['timestamp', 'commits'])
 
         for row in formatted_timeseries:
             writer.writerow(row)
