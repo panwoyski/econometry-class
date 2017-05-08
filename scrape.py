@@ -6,6 +6,8 @@ import bs4
 
 products = [
     'odoo',
+    'oca',
+    'kivitendo',
     'openbravo',
     'openconcerto',
     'postbooks',
