@@ -42,7 +42,7 @@ products = [
     'dnet_ebusiness_suite',
     'sereneerp',
     'siipapw-ex',
-    'p_d_54761', #freedom-erp
+    'p_d_54761',  # freedom-erp
 ]
 
 base_url = 'https://www.openhub.net/p/{}/analyses/latest/commits_history'
@@ -55,10 +55,10 @@ for product in products:
         print("{}: Status code: {}, body {}".format(url, r.status_code, r.content))
         sys.exit(1)
 
-    with open('raw/' + product + ".json", 'w+') as f:
+    with open('raw/' + product + ".json", 'wb+') as f:
         for chunk in r:
             f.write(chunk)
 
-    print('Writing {}'.format(product))
+    print('Scraping {}'.format(product))
 
     time.sleep(random.randint(2, 5))

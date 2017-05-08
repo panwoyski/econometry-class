@@ -22,8 +22,15 @@ for file in files:
         year_sum = sum([value for _, value in values])
         cumulative[year] += year_sum
 
-final_timeseries = sorted(cumulative.items())
+sorted_series = sorted(cumulative.items())
 
-plt.plot(*zip(*final_timeseries))
+with open('commits.csv', 'w+') as fd:
+    writer = csv.writer(fd)
+    writer.writerow(['year', 'commits'])
+
+    for row in sorted_series:
+        writer.writerow(row)
+
+plt.scatter(*zip(*sorted_series))
 plt.grid()
 plt.show()
