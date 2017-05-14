@@ -12,6 +12,7 @@ products = [
     'openconcerto',
     'postbooks',
     'jfire',
+    'promet-erp',
     'dolibarr',
     'weberp',
     'tryton',
