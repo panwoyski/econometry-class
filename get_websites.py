@@ -51,7 +51,7 @@ projects = [
 ]
 agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-base_data_url = "https://www.openhub.net/p/{}/links"
+base_data_url = "https://www.openhub.net/p/{}"
 
 for project in projects:
     print('Finding homepage for {}...'.format(project))
