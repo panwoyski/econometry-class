@@ -16,11 +16,14 @@ class Scraper:
         self.resource = 'https://www.semrush.com/info/{}'
         binary = FirefoxBinary('/usr/lib/firefox/firefox')
         self.driver = webdriver.Firefox(firefox_binary=binary)
+        self.driver.maximize_window()
+
+    def __del__(self):
+        self.driver.close()
 
     def scrape_data(self, page):
         resource = 'https://www.semrush.com/info/{}'.format(page)
         self.driver.get(resource)
-
         try:
             series = self.driver.find_element_by_class_name('highcharts-markers.highcharts-tracker')
         except selenium.common.exceptions.NoSuchElementException:
@@ -86,7 +89,7 @@ def main():
             data = scraper.scrape_data(website)
         except DataNotFound:
             print('\tNo contents to scrape')
-            fd =open('csv_traffic/{}.csv'.format(project), 'w')
+            fd = open('csv_traffic/{}.csv'.format(project), 'w')
             fd.write('<<<<<<<invalid>>>>>>>>>')
             fd.close()
             continue
