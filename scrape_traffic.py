@@ -4,9 +4,12 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+import selenium
+
 
 class DataNotFound(RuntimeError):
     pass
+
 
 class Scraper:
     def __init__(self):
@@ -18,9 +21,12 @@ class Scraper:
         resource = 'https://www.semrush.com/info/{}'.format(page)
         self.driver.get(resource)
 
-        series = self.driver.find_element_by_class_name('highcharts-markers.highcharts-tracker')
-        elements = series.find_elements_by_tag_name('path')
+        try:
+            series = self.driver.find_element_by_class_name('highcharts-markers.highcharts-tracker')
+        except selenium.common.exceptions.NoSuchElementException:
+            raise DataNotFound
 
+        elements = series.find_elements_by_tag_name('path')
 
         retry_counter = 0
         while True:
@@ -30,8 +36,6 @@ class Scraper:
             except:
                 retry_counter += 1
                 time.sleep(0.1)
-                if retry_counter > 150:
-                    raise DataNotFound
 
         print('\tContent loading took {} s'.format(retry_counter * 0.1))
         results = []
@@ -82,6 +86,9 @@ def main():
             data = scraper.scrape_data(website)
         except DataNotFound:
             print('\tNo contents to scrape')
+            fd =open('csv_traffic/{}.csv'.format(project), 'w')
+            fd.write('<<<<<<<invalid>>>>>>>>>')
+            fd.close()
             continue
 
         storage_formatted_data = [(dt.strftime('%Y/%m'), traffic, ptraffic) for dt, traffic, ptraffic in data]
