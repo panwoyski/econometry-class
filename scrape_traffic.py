@@ -5,37 +5,8 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
-# resource = 'https://www.semrush.com/info/dolibarr.com'
-# binary = FirefoxBinary('/usr/lib/firefox/firefox')
-# firefox = webdriver.Firefox(firefox_binary=binary)
-# firefox.get(resource)
-
-# # time.sleep(5)
-# series = firefox.find_element_by_class_name('highcharts-markers.highcharts-tracker')
-# elements = series.find_elements_by_tag_name('path')
-# # time.sleep(0.1)
-#
-# retry_counter = 0
-# while True:
-#     try:
-#         firefox.find_element_by_class_name('highcharts-container.notes-container.notes-container_small')
-#         break
-#     except:
-#         retry_counter += 1
-#         time.sleep(0.1)
-#
-# print('Content loading took {} s'.format(retry_counter * 0.1))
-#
-# for element in elements:
-#     hover = ActionChains(firefox).move_to_element(element)
-#     hover.perform()
-#     # time.sleep(0.5)
-#     try:
-#         origin = firefox.find_element_by_class_name('highcharts-container.notes-container.notes-container_small')
-#         print(origin.find_elements_by_xpath(r"*[@class='highcharts-tooltip']/span")[0].text.split('\n'))
-#     except Exception as e:
-#         print(e)
-
+class DataNotFound(RuntimeError):
+    pass
 
 class Scraper:
     def __init__(self):
@@ -50,6 +21,7 @@ class Scraper:
         series = self.driver.find_element_by_class_name('highcharts-markers.highcharts-tracker')
         elements = series.find_elements_by_tag_name('path')
 
+
         retry_counter = 0
         while True:
             try:
@@ -58,8 +30,10 @@ class Scraper:
             except:
                 retry_counter += 1
                 time.sleep(0.1)
+                if retry_counter > 150:
+                    raise DataNotFound
 
-        print('Content loading took {} s'.format(retry_counter * 0.1))
+        print('\tContent loading took {} s'.format(retry_counter * 0.1))
         results = []
         for element in elements:
             hover = ActionChains(self.driver).move_to_element(element)
@@ -81,19 +55,43 @@ class Scraper:
         from datetime import datetime
         timestring, trafficstring, paidtrafficstring = record
         timestamp = datetime.strptime(timestring, '%b %Y')
-        traffic_value = int(trafficstring.split(' ')[1])
-        paid_traffic_value = int(paidtrafficstring.split(' ')[2])
+        traffic_value = int(trafficstring.split(' ')[1].replace(',', ''))
+        paid_traffic_value = int(paidtrafficstring.split(' ')[2].replace(',', ''))
 
         return timestamp, traffic_value, paid_traffic_value
 
 
 def main():
+    import csv
+    site_infos = []
+    with open('sites.csv', 'r') as fd:
+        reader = csv.reader(fd)
+        for row in reader:
+            site_infos.append(row)
+
+    import os
+    already_parsed = os.listdir('csv_traffic')
+
     scraper = Scraper()
-    from pprint import pprint
-    data = scraper.scrape_data('dolibarr.com')
-    import matplotlib.pyplot as plt
-    plt.scatter([x[0] for x in data], [x[1] for x in data])
-    plt.show()
+    for project, website in site_infos:
+        if '{}.csv'.format(project) in already_parsed:
+            print('Already parsed project ({}, {}) '.format(project, website))
+            continue
+        print('Scraping project ({}, {})...'.format(project, website))
+        try:
+            data = scraper.scrape_data(website)
+        except DataNotFound:
+            print('\tNo contents to scrape')
+            continue
+
+        storage_formatted_data = [(dt.strftime('%Y/%m'), traffic, ptraffic) for dt, traffic, ptraffic in data]
+
+        with open('csv_traffic/{}.csv'.format(project), 'w') as fd:
+            writer = csv.writer(fd)
+            writer.writerow(['timestamp', 'traffic', 'paid traffic'])
+
+            for record in storage_formatted_data:
+                writer.writerow(record)
 
 if __name__ == '__main__':
     main()
