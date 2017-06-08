@@ -86,7 +86,7 @@ for project in projects:
         href = tag[0].attrs['href']
         print(href)
 
-    with open('websites.csv', 'a') as fd:
+    with open('websites_full.csv', 'a') as fd:
         fd.write('"{}","{}"\n'.format(project, href))
 
     time.sleep(random.randint(2, 5))

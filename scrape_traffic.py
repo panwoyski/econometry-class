@@ -77,26 +77,29 @@ def main():
             site_infos.append(row)
 
     import os
-    already_parsed = os.listdir('csv_traffic')
+    path = 'csv_traffic/scrape-201706082337'
+    already_parsed = os.listdir(path)
 
     scraper = Scraper()
     for project, website in site_infos:
         if '{}.csv'.format(project) in already_parsed:
             print('Already parsed project ({}, {}) '.format(project, website))
             continue
+
+        dest_file = '{}/{}.csv'.format(path, project)
         print('Scraping project ({}, {})...'.format(project, website))
         try:
             data = scraper.scrape_data(website)
         except DataNotFound:
             print('\tNo contents to scrape')
-            fd = open('csv_traffic/{}.csv'.format(project), 'w')
+            fd = open(dest_file.format(project), 'w')
             fd.write('<<<<<<<invalid>>>>>>>>>')
             fd.close()
             continue
 
         storage_formatted_data = [(dt.strftime('%Y/%m'), traffic, ptraffic) for dt, traffic, ptraffic in data]
 
-        with open('csv_traffic/{}.csv'.format(project), 'w') as fd:
+        with open(dest_file, 'w') as fd:
             writer = csv.writer(fd)
             writer.writerow(['timestamp', 'traffic', 'paid traffic'])
 
