@@ -90,9 +90,9 @@ ENV/
 .idea
 
 # internal
-traffic/scrape*
 web_of_science
 tools/*.csv
+traffic/scrape*
 traffic/traffic.csv
 model/*.csv
 commits/csv_commits
