@@ -1,5 +1,6 @@
 import csv
 import os
+import sys
 from datetime import datetime
 
 from collections import Counter
@@ -7,7 +8,11 @@ from itertools import groupby
 
 import matplotlib.pyplot as plt
 
-path = 'csv_traffic/scrape-201706082337'
+if not sys.argv[1]:
+    print('Directory have to be specified')
+    exit()
+path = sys.argv[1]
+
 files = os.listdir(path)
 
 cumulative = Counter()

@@ -77,7 +77,13 @@ def main():
             site_infos.append(row)
 
     import os
-    path = 'csv_traffic/scrape-201706082337'
+    import sys
+    if not sys.argv[1]:
+        print('Directory have to be specified')
+        exit()
+
+    path = sys.argv[1]
+    # path = 'csv_traffic/scrape-201706101638'
     already_parsed = os.listdir(path)
 
     scraper = Scraper()
