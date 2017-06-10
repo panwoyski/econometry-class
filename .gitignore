@@ -88,9 +88,13 @@ ENV/
 # Rope project settings
 .ropeproject
 .idea
-csv/*
-raw/
-csv_commits/
 
-commits.csv
-csv_traffic
+# internal
+traffic/scrape*
+web_of_science
+tools/*.csv
+traffic/traffic.csv
+model/*.csv
+commits/csv_commits
+commits/raw
+commits/commits.csv
