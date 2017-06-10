@@ -94,3 +94,7 @@ csv_commits/
 
 commits.csv
 csv_traffic
+traffic/scrape*
+web_of_science
+tools/*.csv
+traffic/traffic.csv
