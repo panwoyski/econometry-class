@@ -87,6 +87,6 @@ for project in projects:
         print(href)
 
     with open('websites_full.csv', 'a') as fd:
-        fd.write('"{}","{}"\n'.format(project, href))
+        fd.write('{},"https://www.openhub.net/p/{}","{}"\n'.format(project, project, href))
 
     time.sleep(random.randint(2, 5))

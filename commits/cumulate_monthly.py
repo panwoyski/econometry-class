@@ -18,19 +18,16 @@ for file in files:
         next(reader)
         # row = [datetime, value]
         for row in reader:
-            timeseries.append((datetime.strptime(row[0], '%Y/%m').year, int(row[1])))
-
-    for year, values in itertools.groupby(timeseries, lambda record: record[0]):
-        year_sum = sum([value for _, value in values])
-        cumulative[year] += year_sum
+            cumulative[datetime.strptime(row[0], '%Y/%m')] += int(row[1])
 
 sorted_series = sorted(cumulative.items())
 
-with open('commits_by_year.csv', 'w+') as fd:
+with open('commits_by_month.csv', 'w+') as fd:
     writer = csv.writer(fd)
-    writer.writerow(['year', 'commits'])
+    writer.writerow(['timestamp', 'commits'])
 
-    for row in sorted_series:
+    for timestamp, value in sorted_series:
+        row = (timestamp.strftime('%Y/%m'), value)
         writer.writerow(row)
 
 plt.scatter(*zip(*sorted_series))

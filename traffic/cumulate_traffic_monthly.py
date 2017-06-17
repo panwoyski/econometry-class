@@ -1,18 +1,16 @@
 import csv
 import os
 import sys
+
 from datetime import datetime
 
 from collections import Counter
-from itertools import groupby
-
 import matplotlib.pyplot as plt
 
 if len(sys.argv[1]) < 2:
     print('Directory have to be specified')
     exit()
 path = sys.argv[1]
-
 files = os.listdir(path)
 
 cumulative = Counter()
@@ -21,22 +19,18 @@ for file in files:
     with open('{}/{}'.format(path, file), 'r') as fd:
         reader = csv.reader(fd)
         next(reader)
-        for timestamp, traffic, _foo in reader:
-            year = datetime.strptime(timestamp, "%Y/%m").year
-            timeseries.append((year, int(traffic)))
-
-    for year, values in groupby(timeseries, lambda x: x[0]):
-        year_sum = sum(value for _bar, value in values)
-        cumulative[year] += year_sum
+        # row = [datetime, value]
+        for row in reader:
+            cumulative[datetime.strptime(row[0], '%Y/%m')] += int(row[1])
 
 sorted_series = sorted(cumulative.items())
-print(sorted_series)
 
-with open('traffic.csv', 'w') as fd:
+with open('traffic_by_month.csv', 'w+') as fd:
     writer = csv.writer(fd)
-    writer.writerow(['year', 'traffic'])
+    writer.writerow(['timestamp', 'commits'])
 
-    for row in sorted_series:
+    for timestamp, value in sorted_series:
+        row = (timestamp.strftime('%Y/%m'), value)
         writer.writerow(row)
 
 plt.scatter(*zip(*sorted_series))
